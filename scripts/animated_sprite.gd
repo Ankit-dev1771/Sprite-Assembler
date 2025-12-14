@@ -7,7 +7,7 @@ extends Node2D
 @export var directions: Array[String] = ["up", "left", "down", "right"]
 @export var rows: int = 4
 @export var cols: int = 4
-@export var fps: float = 1.0
+@export var speed: float = 1.0
 @export var sprite_sheet: Texture2D
 
 @export var generate: bool:
@@ -21,6 +21,7 @@ extends Node2D
 @export_category("Animation Sync")
 # Make sure anim_type is in right order
 @export var anim_type: Array[String]
+@export var holder: Node2D
 @export var action: String
 @export var direction: String
 @export var play: bool:
@@ -32,7 +33,7 @@ extends Node2D
 		return play
 
 
-@onready var holder: Node2D = $"../holder"
+
 
 func _ready() -> void:
 	pass
@@ -43,7 +44,9 @@ func add_animations() -> void:
 		return
 	
 	var Frames: SpriteFrames = target_animatedSprite.sprite_frames
+	@warning_ignore("integer_division")
 	var frame_width: float = sprite_sheet.get_width() / cols
+	@warning_ignore("integer_division")
 	var frame_height: float = sprite_sheet.get_height() / rows
 	
 	for dir_index in range(rows):
@@ -69,16 +72,18 @@ func add_animations() -> void:
 			
 			Frames.add_frame(anim_name, frame_texture)
 		
-		# Set FPS for this animation
-		Frames.set_animation_speed(anim_name, fps)
+		# Set speed for this animation
+		Frames.set_animation_speed(anim_name, speed)
 	
 	print("Animations generated successfully.")
 
+@warning_ignore("shadowed_variable")
 func play_animation(types: Array[String], action: String, direction: String) -> void:
 	# Playing the right animation
 	for index: int in range(types.size()):
 		var anim_name: String = "%s_%s_%s" % [types[index], action, direction]
 		var animPlayer: AnimatedSprite2D = holder.get_child(index)
+		print(anim_name)
 		animPlayer.play(anim_name)
 		
 	# Syncing them
